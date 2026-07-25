@@ -43,7 +43,7 @@ def load_days():
     if not DATA_PATH.exists():
         print(f"{DATA_PATH} not found -- run fetch_contributions.py first.", file=sys.stderr)
         sys.exit(1)
-    payload = json.loads(DATA_PATH.read_text())
+    payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
     return payload
 
 
@@ -138,10 +138,14 @@ def main():
             f'font-family="\'JetBrains Mono\',monospace">{label}</text>'
         )
 
-    legend_x = LEFT_MARGIN
-    legend_y = height - BOTTOM_MARGIN + 34
-    legend_svg = [f'<text x="{legend_x}" y="{legend_y + 8}" font-size="10" fill="#8b949e" font-family="\'JetBrains Mono\',monospace">Less</text>']
-    swatch_x = legend_x + 34
+    # Position the legend cleanly on the bottom right
+    legend_x = width - RIGHT_MARGIN - (len(PALETTE) * (CELL + 3) + 70)
+    legend_y = height - 20
+
+    legend_svg = [
+        f'<text x="{legend_x}" y="{legend_y + 8}" font-size="10" fill="#8b949e" font-family="\'JetBrains Mono\',monospace">Less</text>'
+    ]
+    swatch_x = legend_x + 32
     for i, color in enumerate(PALETTE):
         legend_svg.append(
             f'<rect x="{swatch_x + i * (CELL + 3)}" y="{legend_y}" width="{CELL}" height="{CELL}" rx="2.5" fill="{color}"/>'
@@ -178,10 +182,10 @@ def main():
   {"".join(dow_svg)}
   {"".join(cells_svg)}
   {"".join(legend_svg)}
-  <text x="{LEFT_MARGIN}" y="{height - 10}" font-size="11" fill="#c9d1d9" font-family="'JetBrains Mono',monospace">{footer_text}</text>
+  <text x="{LEFT_MARGIN}" y="{height - 12}" font-size="11" fill="#c9d1d9" font-family="'JetBrains Mono',monospace">{footer_text}</text>
 </svg>'''
 
-    OUTPUT_PATH.write_text(svg)
+    OUTPUT_PATH.write_text(svg, encoding="utf-8")
     print(f"Wrote {OUTPUT_PATH} ({n_cols} weeks x 7 days, {total} total)")
 
 
